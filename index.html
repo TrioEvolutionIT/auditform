@@ -60,6 +60,7 @@
       border-radius: 10px;
       overflow: hidden;
       text-align: center;
+      position: relative;
     }
     .photo-checkbox input[type="checkbox"] {
       display: none;
@@ -72,10 +73,26 @@
       border-radius: 10px;
       border: 2px solid #00ff88;
     }
-    .photo-checkbox input[type="checkbox"]:checked + img {
+    .photo-checkbox input[type="checkbox"]:checked + .tick {
+      display: block;
+    }
+    .photo-checkbox input[type="checkbox"]:checked ~ img {
       border: 3px solid #00ff88;
       opacity: 0.8;
       transform: scale(1.05);
+    }
+    .photo-checkbox .tick {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: rgba(0, 255, 136, 0.9);
+      color: #001f2f;
+      font-weight: bold;
+      border-radius: 50%;
+      padding: 4px 6px;
+      font-size: 16px;
+      display: none;
+      z-index: 2;
     }
 
     button {
@@ -134,48 +151,55 @@
       </select>
 
       <label for="odometer">Odometer Reading</label>
-      <input type="number" name="odometer" id="odometer" required>
+      <input type="number" name="odometer" id="odometer" step="0.1" required>
 
       <label>Audit Checklist</label>
       <div>
         <label class="photo-checkbox">
           <input type="checkbox" name="auditItem[]" value="AC Working">
+          <span class="tick">✔</span>
           <img src="ac.jpg" alt="AC Working">
           <div>AC</div>
         </label>
 
         <label class="photo-checkbox">
           <input type="checkbox" name="auditItem[]" value="Jack">
+          <span class="tick">✔</span>
           <img src="jack.jpg" alt="Jack">
           <div>Jack</div>
         </label>
 
         <label class="photo-checkbox">
           <input type="checkbox" name="auditItem[]" value="Stepney Tyre">
+          <span class="tick">✔</span>
           <img src="stepney.jpg" alt="Stepney">
           <div>Stepney</div>
         </label>
 
         <label class="photo-checkbox">
           <input type="checkbox" name="auditItem[]" value="Fire Extinguisher">
+          <span class="tick">✔</span>
           <img src="fire.jpg" alt="Fire Extinguisher">
           <div>Fire Kit</div>
         </label>
 
         <label class="photo-checkbox">
           <input type="checkbox" name="auditItem[]" value="Medical Kit">
+          <span class="tick">✔</span>
           <img src="medical.jpg" alt="Medical Kit">
           <div>Medical Kit</div>
         </label>
 
         <label class="photo-checkbox">
           <input type="checkbox" name="auditItem[]" value="Umbrella">
+          <span class="tick">✔</span>
           <img src="umbrella.jpg" alt="Umbrella">
           <div>Umbrella</div>
         </label>
 
         <label class="photo-checkbox">
           <input type="checkbox" name="auditItem[]" value="Lug Wrench">
+          <span class="tick">✔</span>
           <img src="wrench.jpg" alt="Lug Wrench">
           <div>Lug Wrench</div>
         </label>
