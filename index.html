@@ -51,7 +51,6 @@
       border-radius: 8px;
       margin-bottom: 10px;
     }
-
     .photo-checkbox {
       display: inline-block;
       margin: 10px;
@@ -94,7 +93,6 @@
       display: none;
       z-index: 2;
     }
-
     button {
       margin-top: 30px;
       width: 100%;
@@ -112,6 +110,43 @@
       background-color: #00cc6a;
     }
   </style>
+  <script>
+    function handleSubmit(e) {
+      e.preventDefault();
+
+      const form = document.getElementById("auditForm");
+      const formData = new FormData(form);
+      const reader = new FileReader();
+      const fileInput = formData.get("damagePhoto");
+
+      if (fileInput && fileInput.size > 0) {
+        reader.onloadend = function () {
+          sendForm(reader.result);
+        };
+        reader.readAsDataURL(fileInput);
+      } else {
+        sendForm("");
+      }
+
+      function sendForm(photoData) {
+        const data = {
+          date: form.date.value,
+          vehicleNumber: form.vehicleNumber.value,
+          odometer: form.odometer.value,
+          auditItems: Array.from(form.querySelectorAll("input[name='auditItem[]']:checked")).map(i => i.value),
+          damagePhoto: photoData,
+          auditorName: form.auditorName.value
+        };
+
+        google.script.run
+          .withSuccessHandler(response => {
+            alert(response.message);
+            if (response.success) form.reset();
+          })
+          .uploadForm(data);
+      }
+    }
+  </script>
 </head>
 <body>
   <div class="container">
@@ -121,7 +156,7 @@
 
     <h1>Vehicle Audit Form</h1>
 
-    <form id="auditForm">
+    <form id="auditForm" onsubmit="handleSubmit(event)">
       <label for="date">Date</label>
       <input type="date" name="date" id="date" required>
 
@@ -161,72 +196,70 @@
           <img src="ac.jpg" alt="AC Working">
           <div>AC</div>
         </label>
-
         <label class="photo-checkbox">
           <input type="checkbox" name="auditItem[]" value="Jack">
           <span class="tick">✔</span>
           <img src="jack.jpg" alt="Jack">
           <div>Jack</div>
         </label>
-
         <label class="photo-checkbox">
           <input type="checkbox" name="auditItem[]" value="Stepney Tyre">
           <span class="tick">✔</span>
           <img src="stepney.jpg" alt="Stepney">
           <div>Stepney</div>
         </label>
-
         <label class="photo-checkbox">
           <input type="checkbox" name="auditItem[]" value="Fire Extinguisher">
           <span class="tick">✔</span>
           <img src="fire.jpg" alt="Fire Extinguisher">
           <div>Fire Kit</div>
         </label>
-
         <label class="photo-checkbox">
           <input type="checkbox" name="auditItem[]" value="Medical Kit">
           <span class="tick">✔</span>
           <img src="medical.jpg" alt="Medical Kit">
           <div>Medical Kit</div>
         </label>
-
         <label class="photo-checkbox">
           <input type="checkbox" name="auditItem[]" value="Umbrella">
           <span class="tick">✔</span>
           <img src="umbrella.jpg" alt="Umbrella">
           <div>Umbrella</div>
         </label>
-
         <label class="photo-checkbox">
           <input type="checkbox" name="auditItem[]" value="Lug Wrench">
           <span class="tick">✔</span>
           <img src="wrench.jpg" alt="Lug Wrench">
           <div>Lug Wrench</div>
         </label>
-      
-       <label class="photo-checkbox">
+        <label class="photo-checkbox">
           <input type="checkbox" name="auditItem[]" value="Headlight">
           <span class="tick">✔</span>
           <img src="headlight.jpg" alt="Headlight">
           <div>Headlight</div>
         </label>
-
         <label class="photo-checkbox">
           <input type="checkbox" name="auditItem[]" value="Backlight">
           <span class="tick">✔</span>
           <img src="backlight.jpg" alt="Backlight">
           <div>Backlight</div>
         </label>
-
         <label class="photo-checkbox">
           <input type="checkbox" name="auditItem[]" value="Side Mirror">
           <span class="tick">✔</span>
           <img src="mirror.jpg" alt="Side Mirror">
           <div>Side Mirror</div>
         </label>
-       </div>
-      <label for="damagePhoto">Upload Damage Photo (if any)</label>
-<input type="file" id="damagePhoto" name="damagePhoto" accept="image/*" capture="environment">
+      </div>
+
+      <label for="damagePhoto">Upload Damage Photo (front side)</label>
+      <input type="file" id="damagePhoto" name="damagePhoto" accept="image/*" capture="environment">
+      <label for="damagePhoto">Upload Damage Photo (lest side)</label>
+      <input type="file" id="damagePhoto" name="damagePhoto" accept="image/*" capture="environment">
+      <label for="damagePhoto">Upload Damage Photo (right any)</label>
+      <input type="file" id="damagePhoto" name="damagePhoto" accept="image/*" capture="environment">
+      <label for="damagePhoto">Upload Damage Photo (back side)</label>
+      <input type="file" id="damagePhoto" name="damagePhoto" accept="image/*" capture="environment">
       <label for="auditorName">Auditor Name</label>
       <input type="text" name="auditorName" id="auditorName" required>
 
