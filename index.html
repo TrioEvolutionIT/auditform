@@ -266,5 +266,55 @@
       <button type="submit">Submit</button>
     </form>
   </div>
+<script>
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    const form = document.getElementById("auditForm");
+    const formData = new FormData(form);
+
+    async function readFile(file) {
+      return new Promise((resolve) => {
+        if (!file) return resolve("");
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(file);
+      });
+    }
+
+    const photoFront = await readFile(formData.getAll("damagePhoto")[0]);
+    const photoLeft = await readFile(formData.getAll("damagePhoto")[1]);
+    const photoRight = await readFile(formData.getAll("damagePhoto")[2]);
+    const photoBack = await readFile(formData.getAll("damagePhoto")[3]);
+
+    const checklist = Array.from(form.querySelectorAll("input[name='auditItem[]']:checked")).map(i => i.value);
+
+    const payload = {
+      date: form.date.value,
+      vehicleNumber: form.vehicleNumber.value,
+      odometer: form.odometer.value,
+      "auditItem[]": checklist,
+      auditorName: form.auditorName.value,
+      photoFront,
+      photoLeft,
+      photoRight,
+      photoBack
+    };
+
+    fetch("https://script.google.com/macros/s/AKfycbyW41AKzh3-33hXMR_JbO4_andxAP8ylRwZrEL8xBpHEeq0BW-IBcYCPvk2wOyN8s6J/exec", {
+      method: "POST",
+      body: new URLSearchParams(payload)
+    })
+    .then(res => res.json())
+    .then(data => {
+      alert(data.message || "Submitted");
+      if (data.success) form.reset();
+    })
+    .catch(err => {
+      alert("Error: " + err.message);
+    });
+  }
+</script>
+
 </body>
 </html>
