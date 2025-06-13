@@ -251,21 +251,11 @@
           <div>Side Mirror</div>
         </label>
       </div>
-
-      <label for="photoFront">Upload Damage Photo (Front Side)</label>
-<input type="file" id="photoFront" name="photoFront" accept="image/*" capture="environment">
-
-<label for="photoLeft">Upload Damage Photo (Left Side)</label>
-<input type="file" id="photoLeft" name="photoLeft" accept="image/*" capture="environment">
-
-<label for="photoRight">Upload Damage Photo (Right Side)</label>
-<input type="file" id="photoRight" name="photoRight" accept="image/*" capture="environment">
-
-<label for="photoBack">Upload Damage Photo (Back Side)</label>
-<input type="file" id="photoBack" name="photoBack" accept="image/*" capture="environment">
-
       <label for="auditorName">Auditor Name</label>
       <input type="text" name="auditorName" id="auditorName" required>
+      <label for="remarks">Remarks</label>
+      <input type="text" name="remarks" id="remarks">
+
 
       <button type="submit">Submit</button>
     </form>
@@ -274,50 +264,26 @@
   function handleSubmit(e) {
     e.preventDefault();
     const form = document.getElementById("auditForm");
-    const formData = new FormData(form);
 
-    const getBase64 = file =>
-      new Promise((resolve, reject) => {
-        if (!file) return resolve("");
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
+    const data = {
+      date: form.date.value,
+      vehicleNumber: form.vehicleNumber.value,
+      odometer: form.odometer.value,
+      auditItems: Array.from(form.querySelectorAll("input[name='auditItem[]']:checked")).map(i => i.value),
+      auditorName: form.auditorName.value,
+      remarks: form.remarks.value
+    };
 
-    Promise.all([
-      getBase64(formData.get("photoFront")),
-      getBase64(formData.get("photoLeft")),
-      getBase64(formData.get("photoRight")),
-      getBase64(formData.get("photoBack"))
-    ]).then(([photoFront, photoLeft, photoRight, photoBack]) => {
-      const data = {
-        date: form.date.value,
-        vehicleNumber: form.vehicleNumber.value,
-        odometer: form.odometer.value,
-        auditItems: Array.from(form.querySelectorAll("input[name='auditItem[]']:checked")).map(i => i.value),
-        photoFront,
-        photoLeft,
-        photoRight,
-        photoBack,
-        auditorName: form.auditorName.value
-      };
-
-      fetch("https://script.google.com/macros/s/AKfycbw0wjPqy47wQbHWKu6cQnUVypIzqhNOKaTPOD_8siS8B3jJLxfLGlndElv-cpTKNjcs/exec", {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: { "Content-Type": "application/json" }
+    fetch("https://script.google.com/macros/s/AKfycbz4ZdZu3kGprvU6Ph-nhkxmz-z-U1LkI1YT_2LaQgyt-C4gt_SzwE7CqQneCdZzeY7i/exec", {
+      method: "POST",
+      body: JSON.stringify(data),
+      headers: { "Content-Type": "application/json" }
+    })
+      .then(response => response.json())
+      .then(result => {
+        alert(result.message);
+        if (result.success) form.reset();
       })
-        .then(response => response.json())
-        .then(result => {
-          alert(result.message);
-          if (result.success) form.reset();
-        })
-        .catch(error => alert("Upload failed: " + error));
-    });
+      .catch(error => alert("Upload failed: " + error));
   }
 </script>
-
-
-</body>
-</html>
