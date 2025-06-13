@@ -110,43 +110,6 @@
       background-color: #00cc6a;
     }
   </style>
-  <script>
-    function handleSubmit(e) {
-      e.preventDefault();
-
-      const form = document.getElementById("auditForm");
-      const formData = new FormData(form);
-      const reader = new FileReader();
-      const fileInput = formData.get("damagePhoto");
-
-      if (fileInput && fileInput.size > 0) {
-        reader.onloadend = function () {
-          sendForm(reader.result);
-        };
-        reader.readAsDataURL(fileInput);
-      } else {
-        sendForm("");
-      }
-
-      function sendForm(photoData) {
-        const data = {
-          date: form.date.value,
-          vehicleNumber: form.vehicleNumber.value,
-          odometer: form.odometer.value,
-          auditItems: Array.from(form.querySelectorAll("input[name='auditItem[]']:checked")).map(i => i.value),
-          damagePhoto: photoData,
-          auditorName: form.auditorName.value
-        };
-
-        google.script.run
-          .withSuccessHandler(response => {
-            alert(response.message);
-            if (response.success) form.reset();
-          })
-          .uploadForm(data);
-      }
-    }
-  </script>
 </head>
 <body>
   <div class="container">
@@ -251,42 +214,43 @@
           <div>Side Mirror</div>
         </label>
       </div>
+
       <label for="auditorName">Auditor Name</label>
       <input type="text" name="auditorName" id="auditorName" required>
+
       <label for="remarks">Remarks</label>
       <input type="text" name="remarks" id="remarks">
-
 
       <button type="submit">Submit</button>
     </form>
   </div>
-<script>
-  function handleSubmit(e) {
-    e.preventDefault();
-    const form = document.getElementById("auditForm");
 
-    const data = {
-      date: form.date.value,
-      vehicleNumber: form.vehicleNumber.value,
-      odometer: form.odometer.value,
-      auditItems: Array.from(form.querySelectorAll("input[name='auditItem[]']:checked")).map(i => i.value),
-      auditorName: form.auditorName.value,
-      remarks: form.remarks.value
-    };
+  <script>
+    function handleSubmit(e) {
+      e.preventDefault();
+      const form = document.getElementById("auditForm");
 
-    fetch("https://script.google.com/macros/s/AKfycbxSQq7BSqZLQgS2XtW9QhKuIaiXDm7UbdtMIjzj-BF2VUtYBV1k10D7qf62B6-STeQv/exec", {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: { "Content-Type": "application/json" }
-    })
-      .then(response => response.json())
-      .then(result => {
-        alert(result.message);
-        if (result.success) form.reset();
+      const data = {
+        date: form.date.value,
+        vehicleNumber: form.vehicleNumber.value,
+        odometer: form.odometer.value,
+        auditItems: Array.from(form.querySelectorAll("input[name='auditItem[]']:checked")).map(i => i.value),
+        auditorName: form.auditorName.value,
+        remarks: form.remarks.value
+      };
+
+      fetch("https://script.google.com/macros/s/AKfycbwb-Tmb4Xv-h32hxvHAgYxHMmzpMgBlC4dTeueuttM3LA2X2AuEmXD8l61ziNaO1lAH/exec", {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: { "Content-Type": "application/json" }
       })
-      .catch(error => alert("Upload failed: " + error));
-  }
-</script>
+        .then(response => response.json())
+        .then(result => {
+          alert(result.message);
+          if (result.success) form.reset();
+        })
+        .catch(error => alert("Upload failed: " + error));
+    }
+  </script>
 </body>
 </html>
-
