@@ -4,11 +4,13 @@
   <meta charset="UTF-8">
   <title>Vehicle Audit Form - TRIO</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Inter', sans-serif;
       background: #001f2f;
       color: #00ff88;
+      margin: 0;
       padding: 20px;
     }
     .container {
@@ -17,26 +19,47 @@
       background: #002b3f;
       padding: 25px;
       border-radius: 16px;
+      box-shadow: 0 0 20px rgba(0, 255, 136, 0.2);
+    }
+    .logo {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .logo img {
+      width: 180px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 30px;
     }
     label {
-      display: block;
+      font-weight: 600;
       margin-top: 15px;
-      font-weight: bold;
+      display: block;
     }
-    input, select {
+    input[type="text"],
+    input[type="date"],
+    input[type="number"],
+    select {
       width: 100%;
       padding: 10px;
       background: #003a55;
       color: #00ff88;
       border: 1px solid #00ff88;
       border-radius: 8px;
-      margin-top: 5px;
+      margin-bottom: 10px;
     }
     .photo-checkbox {
       display: inline-block;
       margin: 10px;
       cursor: pointer;
+      border: 3px solid transparent;
+      border-radius: 10px;
+      overflow: hidden;
       text-align: center;
+      position: relative;
     }
     .photo-checkbox input[type="checkbox"] {
       display: none;
@@ -44,153 +67,204 @@
     .photo-checkbox img {
       width: 100px;
       height: 100px;
+      object-fit: cover;
+      transition: 0.3s;
+      border-radius: 10px;
       border: 2px solid #00ff88;
-      border-radius: 8px;
     }
-    .photo-checkbox input[type="checkbox"]:checked + img {
+    .photo-checkbox input[type="checkbox"]:checked + .tick {
+      display: block;
+    }
+    .photo-checkbox input[type="checkbox"]:checked ~ img {
       border: 3px solid #00ff88;
       opacity: 0.8;
+      transform: scale(1.05);
     }
-    button {
-      margin-top: 20px;
-      padding: 12px;
-      background: #00ff88;
+    .photo-checkbox .tick {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: rgba(0, 255, 136, 0.9);
       color: #001f2f;
       font-weight: bold;
+      border-radius: 50%;
+      padding: 4px 6px;
+      font-size: 16px;
+      display: none;
+      z-index: 2;
+    }
+    button {
+      margin-top: 30px;
+      width: 100%;
+      padding: 12px;
+      background-color: #00ff88;
+      color: #001f2f;
+      font-size: 16px;
+      font-weight: 600;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background-color: #00cc6a;
     }
   </style>
+  <script>
+    function handleSubmit(e) {
+      e.preventDefault();
+
+      const form = document.getElementById("auditForm");
+      const formData = new FormData(form);
+      const reader = new FileReader();
+      const fileInput = formData.get("damagePhoto");
+
+      if (fileInput && fileInput.size > 0) {
+        reader.onloadend = function () {
+          sendForm(reader.result);
+        };
+        reader.readAsDataURL(fileInput);
+      } else {
+        sendForm("");
+      }
+
+      function sendForm(photoData) {
+        const data = {
+          date: form.date.value,
+          vehicleNumber: form.vehicleNumber.value,
+          odometer: form.odometer.value,
+          auditItems: Array.from(form.querySelectorAll("input[name='auditItem[]']:checked")).map(i => i.value),
+          damagePhoto: photoData,
+          auditorName: form.auditorName.value
+        };
+
+        google.script.run
+          .withSuccessHandler(response => {
+            alert(response.message);
+            if (response.success) form.reset();
+          })
+          .uploadForm(data);
+      }
+    }
+  </script>
 </head>
 <body>
   <div class="container">
+    <div class="logo">
+      <img src="logo.jpg" alt="TRIO Logo">
+    </div>
+
     <h1>Vehicle Audit Form</h1>
-    <form id="auditForm">
+
+    <form id="auditForm" onsubmit="handleSubmit(event)">
       <label for="date">Date</label>
-      <input type="date" name="date" required>
+      <input type="date" name="date" id="date" required>
 
       <label for="vehicleNumber">Vehicle Number</label>
-      <select name="vehicleNumber" required>
-        <option value="" disabled selected>Select Vehicle</option>
+      <select name="vehicleNumber" id="vehicleNumber" required>
+        <option value="" disabled selected>Select Vehicle Number</option>
         <option value="WB01BC4246">WB01BC4246</option>
+        <option value="WB01BC4245">WB01BC4245</option>
         <option value="WB01BC4238">WB01BC4238</option>
-        <!-- Add more options as needed -->
+        <option value="WB01BC4232">WB01BC4232</option>
+        <option value="WB01BC4228">WB01BC4228</option>
+        <option value="WB01BC4220">WB01BC4220</option>
+        <option value="WB01BC4216">WB01BC4216</option>
+        <option value="WB01BC4215">WB01BC4215</option>
+        <option value="WB01BC4209">WB01BC4209</option>
+        <option value="WB01BC4208">WB01BC4208</option>
+        <option value="WB01BC4206">WB01BC4206</option>
+        <option value="WB01BC4201">WB01BC4201</option>
+        <option value="WB01BC4188">WB01BC4188</option>
+        <option value="WB01BC4175">WB01BC4175</option>
+        <option value="WB01BC4169">WB01BC4169</option>
+        <option value="WB01BC4167">WB01BC4167</option>
+        <option value="WB01BB8310">WB01BB8310</option>
+        <option value="WB05A3107">WB05A3107</option>
+        <option value="WB05A3138">WB05A3138</option>
+        <option value="WB04J2670">WB04J2670</option>
       </select>
 
       <label for="odometer">Odometer Reading</label>
-      <input type="number" name="odometer" step="0.1" required>
+      <input type="number" name="odometer" id="odometer" step="0.1" required>
 
-      <label>Checklist</label>
+      <label>Audit Checklist</label>
       <div>
         <label class="photo-checkbox">
           <input type="checkbox" name="auditItem[]" value="AC Working">
-          <img src="ac.jpg" alt="AC Working"><div>AC</div>
+          <span class="tick">✔</span>
+          <img src="ac.jpg" alt="AC Working">
+          <div>AC</div>
         </label>
         <label class="photo-checkbox">
           <input type="checkbox" name="auditItem[]" value="Jack">
-          <img src="jack.jpg" alt="Jack"><div>Jack</div>
+          <span class="tick">✔</span>
+          <img src="jack.jpg" alt="Jack">
+          <div>Jack</div>
         </label>
         <label class="photo-checkbox">
           <input type="checkbox" name="auditItem[]" value="Stepney Tyre">
-          <img src="stepney.jpg" alt="Stepney"><div>Stepney</div>
+          <span class="tick">✔</span>
+          <img src="stepney.jpg" alt="Stepney">
+          <div>Stepney</div>
         </label>
         <label class="photo-checkbox">
           <input type="checkbox" name="auditItem[]" value="Fire Extinguisher">
-          <img src="fire.jpg" alt="Fire"><div>Fire Kit</div>
+          <span class="tick">✔</span>
+          <img src="fire.jpg" alt="Fire Extinguisher">
+          <div>Fire Kit</div>
         </label>
         <label class="photo-checkbox">
           <input type="checkbox" name="auditItem[]" value="Medical Kit">
-          <img src="medical.jpg" alt="Medical"><div>Medical</div>
+          <span class="tick">✔</span>
+          <img src="medical.jpg" alt="Medical Kit">
+          <div>Medical Kit</div>
         </label>
         <label class="photo-checkbox">
           <input type="checkbox" name="auditItem[]" value="Umbrella">
-          <img src="umbrella.jpg" alt="Umbrella"><div>Umbrella</div>
+          <span class="tick">✔</span>
+          <img src="umbrella.jpg" alt="Umbrella">
+          <div>Umbrella</div>
         </label>
         <label class="photo-checkbox">
           <input type="checkbox" name="auditItem[]" value="Lug Wrench">
-          <img src="wrench.jpg" alt="Wrench"><div>Wrench</div>
+          <span class="tick">✔</span>
+          <img src="wrench.jpg" alt="Lug Wrench">
+          <div>Lug Wrench</div>
         </label>
         <label class="photo-checkbox">
           <input type="checkbox" name="auditItem[]" value="Headlight">
-          <img src="headlight.jpg" alt="Headlight"><div>Headlight</div>
+          <span class="tick">✔</span>
+          <img src="headlight.jpg" alt="Headlight">
+          <div>Headlight</div>
         </label>
         <label class="photo-checkbox">
           <input type="checkbox" name="auditItem[]" value="Backlight">
-          <img src="backlight.jpg" alt="Backlight"><div>Backlight</div>
+          <span class="tick">✔</span>
+          <img src="backlight.jpg" alt="Backlight">
+          <div>Backlight</div>
         </label>
         <label class="photo-checkbox">
           <input type="checkbox" name="auditItem[]" value="Side Mirror">
-          <img src="mirror.jpg" alt="Side Mirror"><div>Side Mirror</div>
+          <span class="tick">✔</span>
+          <img src="mirror.jpg" alt="Side Mirror">
+          <div>Side Mirror</div>
         </label>
       </div>
 
-      <label>Upload Damage Photos</label>
-      <input type="file" name="photoFront" accept="image/*" capture="environment" required>
-      <input type="file" name="photoLeft" accept="image/*" capture="environment" required>
-      <input type="file" name="photoRight" accept="image/*" capture="environment" required>
-      <input type="file" name="photoBack" accept="image/*" capture="environment" required>
-
+      <label for="damagePhoto">Upload Damage Photo (front side)</label>
+      <input type="file" id="damagePhoto" name="damagePhoto" accept="image/*" capture="environment">
+      <label for="damagePhoto">Upload Damage Photo (lest side)</label>
+      <input type="file" id="damagePhoto" name="damagePhoto" accept="image/*" capture="environment">
+      <label for="damagePhoto">Upload Damage Photo (right any)</label>
+      <input type="file" id="damagePhoto" name="damagePhoto" accept="image/*" capture="environment">
+      <label for="damagePhoto">Upload Damage Photo (back side)</label>
+      <input type="file" id="damagePhoto" name="damagePhoto" accept="image/*" capture="environment">
       <label for="auditorName">Auditor Name</label>
-      <input type="text" name="auditorName" required>
+      <input type="text" name="auditorName" id="auditorName" required>
 
       <button type="submit">Submit</button>
     </form>
   </div>
-
-  <script>
-    document.getElementById("auditForm").addEventListener("submit", async function (e) {
-      e.preventDefault();
-
-      const form = e.target;
-      const formData = new FormData(form);
-
-      // Convert images to base64
-      const imageFields = ["photoFront", "photoLeft", "photoRight", "photoBack"];
-      const base64Images = [];
-
-      for (let field of imageFields) {
-        const file = formData.get(field);
-        if (file && file.size > 0) {
-          const base64 = await toBase64(file);
-          base64Images.push(base64);
-        } else {
-          base64Images.push("");
-        }
-      }
-
-      const data = {
-        date: formData.get("date"),
-        vehicleNumber: formData.get("vehicleNumber"),
-        odometer: formData.get("odometer"),
-        auditorName: formData.get("auditorName"),
-        "auditItem[]": formData.getAll("auditItem[]"),
-        "damagePhotos[]": base64Images
-      };
-
-      fetch("https://script.google.com/macros/s/AKfycbwfKA6R77-dUH8qX5c3MDfDGNVAPpSoPoXTDMNUDVw6lB-BUJt6SrF4Ps7PWMmMFpaZ/exec", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      })
-      .then(res => res.text())
-      .then(response => {
-        alert("Submitted: " + response);
-        form.reset();
-      })
-      .catch(error => {
-        alert("Error: " + error.message);
-      });
-    });
-
-    function toBase64(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-        reader.readAsDataURL(file);
-      });
-    }
-  </script>
 </body>
 </html>
