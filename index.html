@@ -241,33 +241,33 @@
   </div>
 
   <script>
-    function handleSubmit(e) {
-      e.preventDefault();
-      const form = document.getElementById("auditForm");
+  const scriptURL = "https://script.google.com/macros/s/AKfycbxPf1Zaikj8mNYD0-OPBDwNQVV0VIzklMkS1yIc3kMvY9ryvqDf8XuLGCYf-UpkbzqYzA/exec"; // <-- Replace with your actual deployed Web App URL
 
-      const data = {
-        date: form.date.value,
-        vehicleNumber: form.vehicleNumber.value,
-        odometer: form.odometer.value,
-        auditItems: Array.from(form.querySelectorAll("input[name='auditItem[]']:checked")).map(i => i.value),
-        auditorName: form.auditorName.value,
-        remarks: form.remarks.value
-      };
+  function handleSubmit(event) {
+    event.preventDefault();
 
-      fetch("https://script.google.com/macros/s/AKfycbz2foU3x3e6gAM9hweRCBCDcyunwgn8vdRR_OvmuBQ4e7JweJzDYJqwXDwd942Ra9S8AQ/exec", {
-        method: "POST",
-        body: JSON.stringify(data),
-        headers: {
-          "Content-Type": "application/json"
-        }
-      })
-      .then(response => response.json())
-      .then(result => {
-        alert(result.message);
-        if (result.success) form.reset();
-      })
-      .catch(error => alert("Upload failed: " + error));
-    }
-  </script>
+    const form = document.getElementById("auditForm");
+    const formData = new FormData(form);
+
+    fetch(scriptURL, {
+      method: "POST",
+      body: formData,
+    })
+    .then(response => {
+      if (response.ok) {
+        alert("Audit submitted successfully!");
+        form.reset();
+        window.scrollTo(0, 0);
+      } else {
+        alert("Submission failed. Please try again.");
+      }
+    })
+    .catch(error => {
+      console.error("Error!", error.message);
+      alert("Error submitting form.");
+    });
+  }
+</script>
+
 </body>
 </html>
